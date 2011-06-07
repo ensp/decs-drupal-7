@@ -1,0 +1,19 @@
+<?php
+
+/**
+* Implements hook_help.
+*
+* Displays help and module information.
+*
+* @param path
+*   Which path of the site we're using to display help
+* @param arg
+*   Array that holds the current path as returned from arg() function
+*/
+function decs_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#decs":
+      return '<p>'. t("Fornece mecanismo para usar os Descritores em Ciências da Saúde (DeCS)") .'</p>';
+      break;
+  }
+} 
