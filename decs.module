@@ -1,6 +1,89 @@
 <?php
 
 /**
+ * @file
+ * An example field using the Field API.
+ *
+ * Providing a field requires:
+ * - Defining a field
+ *   - hook_field_info()
+ *   - hook_field_schema()
+ *   - hook_field_validate()
+ *   - hook_field_is_empty()
+ *
+ * - Defining a formatter for the field (the portion that outputs the field for display)
+ *   - hook_field_formatter_info()
+ *   - hook_field_formatter_view()
+ *
+ * - Defining a widget for the edit form
+ *   - hook_field_widget_info()
+ *   - hook_field_widget_form()
+ *
+ * *
+ * See @link field_types Field Types API @endlink
+ */
+
+/***************************************************************
+ * Field Type API hooks
+ ***************************************************************/
+
+/**
+ * Implements hook_field_info().
+ *
+ * Provides the description of the field.
+ */
+function decs_field_info() {
+
+	return array(
+		'search_string' => array(
+		'label' => t('Texto'),
+		'description' => t('Campo de busca dos descritores DeCS.'),
+		'default_widget' => 'decs_default_widget',
+		'default_formatter' => 'decs_default_formatter',
+		),
+	);
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function decs_field_is_empty($item, $field) {
+
+	return empty($item['search_string']);
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function decs_field_widget_info() {
+
+	return array(
+		'decs_default_widget' => array(
+			'label' => t('Text field'), 
+			'field types' => array('text'), 
+			'settings' => array('size' => 60), 
+			'behaviors' => array(
+			'multiple values' => FIELD_BEHAVIOR_DEFAULT, 
+			'default value' => FIELD_BEHAVIOR_DEFAULT,   
+			),
+		),	
+	);
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+	
+	$element += array(
+		'#type' => 'textfield',
+		'#default_value' => '',	
+	);
+
+	return $element;	
+}
+
+/**
 * Implements hook_help.
 *
 * Displays help and module information.
@@ -11,9 +94,10 @@
 *   Array that holds the current path as returned from arg() function
 */
 function decs_help($path, $arg) {
-  switch ($path) {
-    case "admin/help#decs":
-      return '<p>'. t("Fornece mecanismo para usar os Descritores em Ciências da Saúde (DeCS)") .'</p>';
-      break;
-  }
-} 
+
+	switch ($path) {
+		case "admin/help#decs":
+		return '<p>'. t("Fornece mecanismo para usar os Descritores em Ciências da Saúde (DeCS)") .'</p>';
+		break;
+	}
+}

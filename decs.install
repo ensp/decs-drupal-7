@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the field_example module.
+ */
+
+/**
+ * Implements hook_field_schema().
+ *
+ * This defines the actual database schema of the field, using the format
+ * used by the Schema API.
+ *
+ * ...
+ *
+ * @see hook_field_schema()
+ * @link schemaapi Schema API @endlink
+ */
+function decs_field_schema($field) {
+}
