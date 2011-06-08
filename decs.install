@@ -17,4 +17,18 @@
  * @link schemaapi Schema API @endlink
  */
 function decs_field_schema($field) {
+	$columns = array(
+		'descriptors' => array('type' => 'text', 'size' => 'big', 'not null' => FALSE),
+	);
+	
+	/*
+	$indexes = array(
+		'descriptors' => array('descriptors'),
+	);
+	* */
+	
+	return array(
+		'columns' => $columns,
+		//'indexes' => $indexes,
+	);	
 }

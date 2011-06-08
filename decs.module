@@ -16,49 +16,54 @@
  * Provides the description of the field.
  */
 function decs_field_info() {
-
 	return array(
 		'decs_decs' => array(
-		'label' => t('Descritores em Ciências da Saúde'),
-		'description' => t('Campo de busca para Descritores em Ciências da Saúde (DeCS).'),
-		'default_widget' => 'decs_field',
-		'default_formatter' => 'decs_field',
+			'label' => t('Descritores em Ciências da Saúde'),
+			'description' => t('Campo de busca para Descritores em Ciências da Saúde (DeCS).'),
+			'default_widget' => 'decs_descriptors_field',
+			'default_formatter' => 'decs_descriptors_field',			
 		),
 	);
-}
-
-/**
- * Implements hook_field_is_empty().
- */
-function decs_field_is_empty($item, $field) {
-
-	return false;
 }
 
 /**
  * Implements hook_field_widget_info().
  */
 function decs_field_widget_info() {
-
 	return array(
-		'decs_field' => array(
+		'decs_descriptors_field' => array(
 			'label' => t('Campo DeCS'), 
 			'field types' => array('decs_decs'), 
-			),
-		);
+		),
+	);
 }
 
 /**
  * Implements hook_field_widget_form().
  */
-function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {	
 	
 	$element += array(
+		'#id' => 'decs-descriptors-field',
 		'#type' => 'textfield',
-		'#default_value' => '',
+		'#default_value' => isset($items[$delta]['descriptors']) ? $items[$delta]['descriptors'] : '',
+		'#suffix' => '<div id="decs-container">' . 
+		'<input id="decs-search-field" class="form-text" type="text" value=""/>' . 
+		'<input id="decs-search-button" class="form-submit" type="button" value="procurar"/></div>',
+		'#attached' => array(
+			'js' => array(drupal_get_path('module', 'decs') . '/decs.js'),
+			'css' => array(drupal_get_path('module', 'decs') . '/decs.css'),			
+		),
 	);
 
 	return $element;	
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function decs_field_is_empty($item, $field) {
+	return false;
 }
 
 /***********************************************************************
@@ -94,7 +99,6 @@ function decs_field_formatter_info() {
 *   Array that holds the current path as returned from arg() function
 */
 function decs_help($path, $arg) {
-
 	switch ($path) {
 		case "admin/help#decs":
 		return '<p>'. t("Fornece mecanismo para usar os Descritores em Ciências da Saúde (DeCS)") .'</p>';
