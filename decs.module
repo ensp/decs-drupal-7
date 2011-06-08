@@ -2,25 +2,8 @@
 
 /**
  * @file
- * An example field using the Field API.
+ * Campo de busca para Descritores em Ciências da Saúde (DeCS).
  *
- * Providing a field requires:
- * - Defining a field
- *   - hook_field_info()
- *   - hook_field_schema()
- *   - hook_field_validate()
- *   - hook_field_is_empty()
- *
- * - Defining a formatter for the field (the portion that outputs the field for display)
- *   - hook_field_formatter_info()
- *   - hook_field_formatter_view()
- *
- * - Defining a widget for the edit form
- *   - hook_field_widget_info()
- *   - hook_field_widget_form()
- *
- * *
- * See @link field_types Field Types API @endlink
  */
 
 /***************************************************************
@@ -35,11 +18,11 @@
 function decs_field_info() {
 
 	return array(
-		'search_string' => array(
-		'label' => t('Texto'),
-		'description' => t('Campo de busca dos descritores DeCS.'),
-		'default_widget' => 'decs_default_widget',
-		'default_formatter' => 'decs_default_formatter',
+		'decs_decs' => array(
+		'label' => t('Descritores em Ciências da Saúde'),
+		'description' => t('Campo de busca para Descritores em Ciências da Saúde (DeCS).'),
+		'default_widget' => 'decs_field',
+		'default_formatter' => 'decs_field',
 		),
 	);
 }
@@ -49,7 +32,7 @@ function decs_field_info() {
  */
 function decs_field_is_empty($item, $field) {
 
-	return empty($item['search_string']);
+	return false;
 }
 
 /**
@@ -58,16 +41,11 @@ function decs_field_is_empty($item, $field) {
 function decs_field_widget_info() {
 
 	return array(
-		'decs_default_widget' => array(
-			'label' => t('Text field'), 
-			'field types' => array('text'), 
-			'settings' => array('size' => 60), 
-			'behaviors' => array(
-			'multiple values' => FIELD_BEHAVIOR_DEFAULT, 
-			'default value' => FIELD_BEHAVIOR_DEFAULT,   
+		'decs_field' => array(
+			'label' => t('Campo DeCS'), 
+			'field types' => array('decs_decs'), 
 			),
-		),	
-	);
+		);
 }
 
 /**
@@ -77,11 +55,33 @@ function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langco
 	
 	$element += array(
 		'#type' => 'textfield',
-		'#default_value' => '',	
+		'#default_value' => '',
 	);
 
 	return $element;	
 }
+
+/***********************************************************************
+ *  Field Type API: Formatter
+ *
+ *  These are the api hooks that present formatted (themed) output to the
+ *  user.
+ **********************************************************************/
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+/*
+function decs_field_formatter_info() {
+	
+	return array(
+		'decs_field' => array(
+		'label' => t('Campo DeCS'),
+		'field types' => array('decs_decs'),
+		),
+	);
+}
+*/
 
 /**
 * Implements hook_help.
