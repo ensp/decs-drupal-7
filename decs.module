@@ -43,13 +43,25 @@ function decs_field_widget_info() {
  */
 function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {	
 	
-	$element += array(
+	$element['descriptors'] = array();
+	
+	$element['descriptors'] += array(
 		'#id' => 'decs-descriptors-field',
 		'#type' => 'textfield',
 		'#default_value' => isset($items[$delta]['descriptors']) ? $items[$delta]['descriptors'] : '',
-		'#suffix' => '<div id="decs-container">' . 
-		'<input id="decs-search-field" class="form-text" type="text" value=""/>' . 
-		'<input id="decs-search-button" class="form-submit" type="button" value="procurar"/></div>',
+		'#suffix' => 
+		'<div id="decs-container">' . 
+		'	<input id="decs-search-field" class="form-text" type="text" value=""/>' . 
+		'	<input id="decs-search-button" class="form-submit" type="button" value="procurar"/>' .
+		'	<div>' . 
+		'		<strong class="form-item-title">Descritores Encontrados</strong>' . 
+		'		<ul id="decs-found-descriptors"></ul>' . 
+		'	</div>' .
+		'	<div>' . 
+		'		<strong class="form-item-title">Descritores Selecionados</strong>' . 
+		'		<ul id="decs-selected-descriptors"></ul>' . 
+		'	</div>' . 
+		'</div>',
 		'#attached' => array(
 			'js' => array(drupal_get_path('module', 'decs') . '/decs.js'),
 			'css' => array(drupal_get_path('module', 'decs') . '/decs.css'),			
