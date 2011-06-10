@@ -25,7 +25,7 @@ function decs_field_schema($field) {
 	$indexes = array(
 		'descriptors' => array('descriptors'),
 	);
-	* */
+	*/
 	
 	return array(
 		'columns' => $columns,

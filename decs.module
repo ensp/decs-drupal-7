@@ -5,6 +5,24 @@
  * Campo de busca para Descritores em Ciências da Saúde (DeCS).
  *
  */
+ 
+/**
+ * Implements hook_help.
+ *
+ * Displays help and module information.
+ *
+ * @param path
+ *   Which path of the site we're using to display help
+ * @param arg
+ *   Array that holds the current path as returned from arg() function
+ */
+function decs_help($path, $arg) {
+	switch ($path) {
+		case 'admin/help#decs':
+		return '<p>' . t('Fornece mecanismo para usar os Descritores em Ciências da Saúde (DeCS)') . '</p>';
+		break;
+	}
+}
 
 /***************************************************************
  * Field Type API hooks
@@ -78,42 +96,49 @@ function decs_field_is_empty($item, $field) {
 	return false;
 }
 
-/***********************************************************************
- *  Field Type API: Formatter
- *
- *  These are the api hooks that present formatted (themed) output to the
- *  user.
- **********************************************************************/
-
 /**
- * Implements hook_field_formatter_info().
+ * Implements hook_menu().
  */
-/*
-function decs_field_formatter_info() {
-	
-	return array(
-		'decs_field' => array(
-		'label' => t('Campo DeCS'),
-		'field types' => array('decs_decs'),
-		),
-	);
-}
-*/
 
-/**
-* Implements hook_help.
-*
-* Displays help and module information.
-*
-* @param path
-*   Which path of the site we're using to display help
-* @param arg
-*   Array that holds the current path as returned from arg() function
-*/
-function decs_help($path, $arg) {
-	switch ($path) {
-		case "admin/help#decs":
-		return '<p>'. t("Fornece mecanismo para usar os Descritores em Ciências da Saúde (DeCS)") .'</p>';
-		break;
-	}
+function decs_menu() {
+	
+	$items = array();
+	
+	$items['decs/descritores/%'] = array(
+		'title' => 'DeCS Ajax',
+		'page callback' => 'decs_descritores_callback',
+		'page arguments' => array(2),
+		'access arguments' => array(t('access content')),
+		'type' => MENU_CALLBACK,
+	);
+	
+	return $items;
 }
+
+// AJAX
+
+function decs_descritores_callback($texto) {
+	
+	$xml = _decs_xml('http://decs.bvs.br/cgi-bin/mx/cgi=@vmx/decs/?bool=' . $texto);
+	$nos = $xml->xpath('/decsvmx/decsws_response');	
+	
+	$descritores = array();
+	
+	foreach ($nos as $no) {					
+		$descritores[(string) $no->tree->self->term_list->term] = array('tree_id' => (string) $no['tree_id']);		
+		foreach ($no->record_list->record->synonym_list->synonym as $sinonimo)					
+			$descritores[(string) $sinonimo] = array('tree_id' => (string) $no['tree_id']);		
+	}
+	
+	drupal_json_output(array('descritores'=>$descritores));
+}
+
+function _decs_xml($url) {		
+	return simplexml_load_file($url);
+}
+
+
+
+
+
+

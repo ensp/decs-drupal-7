@@ -44,7 +44,7 @@
 		// chamada no método Decs.adicionarDescritorNaListaDeDescritoresSelecionados.
 		Decs.adicionarDescritorNoCampoOculto = function(descritor) {
 			
-			// Realiza teste para não incluir um descritor duplicado.
+			// Realiza teste para não adicionar um descritor duplicado.
 			// Este teste é redundante, pois existe um teste semelhante 
 			// na função Decs.adicionarDescritorNaListaDeDescritoresSelecionados,
 			// que é executado antes deste. Mas devido ao meu estilo defensivo 
@@ -135,19 +135,35 @@
 			}	
 		}
 		
+		// AJAX
+
+		Decs.procurarDescritoresPorPalavraChave = function() {			
+			
+			var enderecoAjax = "http://localhost/drupal7_site1/?q=decs/descritores/" + $("#decs-search-field").val();
+				
+			jQuery.getJSON(enderecoAjax, function(data) {				
+				alert('resposta ajax');
+			});
+		}		
+		
 		// Inicializador.
 		Decs.inicializar = function() {			
+
 			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 1');
 			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 2');
 			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 3');
 			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 4');
 			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 5');	
+			
 			Decs.carregarListaDeDescritoresSelecionados();					
+
+			$("#decs-search-button").click(function() {
+				Decs.procurarDescritoresPorPalavraChave();
+			});
 		};
 		
 		Decs.inicializar();
 
 	});
 })(jQuery);
-
 
