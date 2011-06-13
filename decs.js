@@ -5,26 +5,29 @@
  
 (function($) {
 	$(document).ready(function() {
-	 
-		// oculta campo decs_field
-		// $('#decs-descriptors-field').css('display', 'none');
 		
 		var Decs = {};
 		
+		Decs.ALTURA_DA_CAIXA_DE_RESULTADO = 200;
+		
+		/*
+		 * MÉTODOS PARA GERENCIAR OS ITENS DAS LISTAS DE DESCRITORES ENCONTRADOS/SELECIONADOS
+		 */ 
+				
 		// Adiciona um descritor na lista de descritores selecionados.
 		Decs.adicionarDescritorNaListaDeDescritoresSelecionados = function(descritor) {
 		
 			// realiza teste para não incluir um descritor duplicado
 			
-			var itensDaListaDeDescritores = $("#decs-selected-descriptors li");
+			var itensDaListaDeDescritores = $("#decs-descritores-selecionados li");
 			var descritoresNaLista = new Array();
 	
 			for (var i=0; i<itensDaListaDeDescritores.length; i++)
 				descritoresNaLista.push($(itensDaListaDeDescritores[i]).text());
 		
 			if (jQuery.inArray(descritor, descritoresNaLista) == -1) {
-				$("#decs-selected-descriptors").append('<li>' + descritor + '</li>');
-				$("#decs-selected-descriptors li:last").click(function() {					
+				$("#decs-descritores-selecionados").append('<li>' + descritor + '</li>');
+				$("#decs-descritores-selecionados li:last").click(function() {					
 					if (confirm("Deseja remover o descritor: " + descritor))					
 						Decs.removerDescritorDaListaDeDescritoresSelecionados(descritor);
 				});					
@@ -34,11 +37,94 @@
 		
 		// Adiciona um descritor na lista de descritores encontrados.
 		Decs.adicionarDescritorNaListaDeDescritoresEncontrados = function(descritor) {			
-			$("#decs-found-descriptors").append('<li>' + descritor + '</li>');					
-			$("#decs-found-descriptors li:last").click(function() {
+			$("#decs-descritores-encontrados").append('<li><span>' + descritor + '</span></li>');					
+			$("#decs-descritores-encontrados li:last").click(function() {
 				Decs.adicionarDescritorNaListaDeDescritoresSelecionados(descritor);
+			});	
+			$("#decs-descritores-encontrados li:last span").mouseover(function() {
+				$(this).addClass("decs-descritor-selecionado");
 			});			
-		};
+			$("#decs-descritores-encontrados li:last span").mouseout(function() {
+				$(this).removeClass("decs-descritor-selecionado");
+			});												
+		};		
+		
+		// Remove um descritor da lista de descritores selecionados.
+		Decs.removerDescritorDaListaDeDescritoresSelecionados = function(descritor) {
+			
+			var removerDescritorDoCampoOculto = false;
+			var itensDaListaDeDescritores = $("#decs-descritores-selecionados li");
+				
+			for (var i=0; i<itensDaListaDeDescritores.length; i++) {
+				if ($(itensDaListaDeDescritores[i]).text() == descritor) {
+					$(itensDaListaDeDescritores[i]).remove();		
+					removerDescritorDoCampoOculto = true;	
+				}	
+			}	
+			
+			if (removerDescritorDoCampoOculto)
+				Decs.removerDescritorDoCampoOculto(descritor);
+		}
+		
+		// Carrega lista de descritores selecionados.
+		Decs.carregarListaDeDescritoresSelecionados = function() {
+			
+			var valorPreenchidoDoCampoString = $("#decs-descriptors-field").val();
+			
+			if (valorPreenchidoDoCampoString.split(" ").join("") != "") {
+				
+				var valorPreenchidoDoCampoArray = valorPreenchidoDoCampoString.split(", ");
+				
+				for (var i=0; i<valorPreenchidoDoCampoArray.length; i++) {
+					$("#decs-descritores-selecionados").append('<li>' + valorPreenchidoDoCampoArray[i] + '</li>');
+					$("#decs-descritores-selecionados li:last").click(function() {
+						if (confirm("Deseja remover o descritor: " + $(this).text()))	
+							Decs.removerDescritorDaListaDeDescritoresSelecionados($(this).text());
+					});				
+				}								
+			}	
+		}
+		
+		Decs.removerTodosOsItensDaListaDeDescritoresEncontrados = function() {
+			$("#decs-descritores-encontrados li").remove();				
+		}
+		
+		// recebe resultado da busca e atualiza lista de descritores encontrados 
+		Decs.atualizarListaDeDescritoresEncontrados = function(dados) {
+			
+			Decs.removerTodosOsItensDaListaDeDescritoresEncontrados();
+			
+			var total = 0;
+					
+			for (item in dados) {				
+				idDaArvoreDoDescritor = dados[item]['arvore_id'];
+				Decs.adicionarDescritorNaListaDeDescritoresEncontrados(item);
+				total++;
+			}
+						
+			var mensagem_alertaDeScroll = "";
+			
+			if ($("#decs-descritores-encontrados li:last").offset().top + $("#decs-descritores-encontrados li:last").outerHeight() >
+				$("#decs-descritores-encontrados").offset().top + Decs.ALTURA_DA_CAIXA_DE_RESULTADO) {
+				mensagem_alertaDeScroll = " (use a barra de rolagem para ver os descritores ocultos)";
+			}
+			
+			var mensagem_quatidade = "";
+			
+			if (total == 0)
+				mensagem_quatidade = "nenhum descritor encontrado";
+			else if (total == 1)
+				mensagem_quatidade	= "1 descritor encontrado";
+			else
+				mensagem_quatidade	= total + " descritores encontrados";			
+			
+			$("#decs-mensagem").text(mensagem_quatidade + " " + mensagem_alertaDeScroll);
+			$("#decs-mensagem").fadeIn();				
+		}		
+		
+		/*
+		 * MÉTODOS PARA GERENCIAR O VALOR DO CAMPO OCULTO COM DESCRITORES SELECIONADOS
+		 */ 
 		
 		// Adiciona um descritor no campo oculto com lista de descritores selecionados,
 		// chamada no método Decs.adicionarDescritorNaListaDeDescritoresSelecionados.
@@ -63,26 +149,8 @@
 					valorAtualizadoDoCampoString += ", " + descritor;
 			}
 			
-			$("#decs-descriptors-field").val(valorAtualizadoDoCampoString);
-			
-		} ; 
-		
-		// Remove um descritor da lista de descritores selecionados.
-		Decs.removerDescritorDaListaDeDescritoresSelecionados = function(descritor) {
-			
-			var removerDescritorDoCampoOculto = false;
-			var itensDaListaDeDescritores = $("#decs-selected-descriptors li");
-				
-			for (var i=0; i<itensDaListaDeDescritores.length; i++) {
-				if ($(itensDaListaDeDescritores[i]).text() == descritor) {
-					$(itensDaListaDeDescritores[i]).remove();		
-					removerDescritorDoCampoOculto = true;	
-				}	
-			}	
-			
-			if (removerDescritorDoCampoOculto)
-				Decs.removerDescritorDoCampoOculto(descritor);
-		}
+			$("#decs-descriptors-field").val(valorAtualizadoDoCampoString);			
+		} ; 		
 		
 		// Remove um decritor do campo oculto,
 		// chamada no método Decs.removerDescritorDaListaDeDescritoresSelecionados.  
@@ -116,48 +184,30 @@
 			$("#decs-descriptors-field").val(valorAtualizadoDoCampoString);						
 		}
 		
-		// Carrega lista de descritores selecionados.
-		Decs.carregarListaDeDescritoresSelecionados = function() {
-			
-			var valorPreenchidoDoCampoString = $("#decs-descriptors-field").val();
-			
-			if (valorPreenchidoDoCampoString.split(" ").join("") != "") {
-				
-				var valorPreenchidoDoCampoArray = valorPreenchidoDoCampoString.split(", ");
-				
-				for (var i=0; i<valorPreenchidoDoCampoArray.length; i++) {
-					$("#decs-selected-descriptors").append('<li>' + valorPreenchidoDoCampoArray[i] + '</li>');
-					$("#decs-selected-descriptors li:last").click(function() {
-						if (confirm("Deseja remover o descritor: " + $(this).text()))	
-							Decs.removerDescritorDaListaDeDescritoresSelecionados($(this).text());
-					});				
-				}								
-			}	
-		}
-		
-		// AJAX
+		/*
+		 * AJAX
+		 */ 
 
 		Decs.procurarDescritoresPorPalavraChave = function() {			
+						
+			var enderecoAjax = "http://localhost/drupal7_site1/?q=decs/descritores/" + $("#decs-campo-busca").val();
 			
-			var enderecoAjax = "http://localhost/drupal7_site1/?q=decs/descritores/" + $("#decs-search-field").val();
+			$("#decs-mensagem").hide();
 				
-			jQuery.getJSON(enderecoAjax, function(data) {				
-				alert('resposta ajax');
+			jQuery.getJSON(enderecoAjax, function(dados) {				
+				Decs.atualizarListaDeDescritoresEncontrados(dados.descritores);
 			});
 		}		
 		
 		// Inicializador.
 		Decs.inicializar = function() {			
-
-			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 1');
-			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 2');
-			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 3');
-			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 4');
-			Decs.adicionarDescritorNaListaDeDescritoresEncontrados('descritor 5');	
+			
+			// oculta campo decs_field
+			$("#decs-descriptors-field").css("display", "none");
 			
 			Decs.carregarListaDeDescritoresSelecionados();					
 
-			$("#decs-search-button").click(function() {
+			$("#decs-botao-busca").click(function() {
 				Decs.procurarDescritoresPorPalavraChave();
 			});
 		};

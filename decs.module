@@ -65,19 +65,22 @@ function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langco
 	
 	$element['descriptors'] += array(
 		'#id' => 'decs-descriptors-field',
+		'#title' => 'Descritores em Ciências da Saúde',
 		'#type' => 'textfield',
+		'#maxlength'=>'10000000',
 		'#default_value' => isset($items[$delta]['descriptors']) ? $items[$delta]['descriptors'] : '',
 		'#suffix' => 
 		'<div id="decs-container">' . 
-		'	<input id="decs-search-field" class="form-text" type="text" value=""/>' . 
-		'	<input id="decs-search-button" class="form-submit" type="button" value="procurar"/>' .
-		'	<div>' . 
-		'		<strong class="form-item-title">Descritores Encontrados</strong>' . 
-		'		<ul id="decs-found-descriptors"></ul>' . 
+		'	<input id="decs-campo-busca" class="form-text" type="text" value=""/>' . 
+		'	<input id="decs-botao-busca" class="form-submit" type="button" value="procurar"/>' .
+		'	<div id="decs-descritores-encontrados-container">' . 
+		'		<strong class="form-item-title">Resultado:</strong>' . 
+		'		<div id="decs-descritores-encontrados-mensagem"><p id="decs-mensagem"></p></div>' . 
+		'		<ul id="decs-descritores-encontrados"></ul>' .
 		'	</div>' .
-		'	<div>' . 
-		'		<strong class="form-item-title">Descritores Selecionados</strong>' . 
-		'		<ul id="decs-selected-descriptors"></ul>' . 
+		'	<div id="decs-descritores-selecionados-container" class="decs-clearfix">' . 
+		'		<strong class="form-item-title">Descritores Selecionados:</strong>' . 
+		'		<ul id="decs-descritores-selecionados" class="decs-clearfix"></ul>' . 
 		'	</div>' . 
 		'</div>',
 		'#attached' => array(
@@ -85,6 +88,8 @@ function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langco
 			'css' => array(drupal_get_path('module', 'decs') . '/decs.css'),			
 		),
 	);
+	
+	unset($element['#maxlength']);
 
 	return $element;	
 }
@@ -125,9 +130,9 @@ function decs_descritores_callback($texto) {
 	$descritores = array();
 	
 	foreach ($nos as $no) {					
-		$descritores[(string) $no->tree->self->term_list->term] = array('tree_id' => (string) $no['tree_id']);		
+		$descritores[(string) $no->tree->self->term_list->term] = array('arvore_id' => (string) $no['tree_id']);		
 		foreach ($no->record_list->record->synonym_list->synonym as $sinonimo)					
-			$descritores[(string) $sinonimo] = array('tree_id' => (string) $no['tree_id']);		
+			$descritores[(string) $sinonimo] = array('arvore_id' => (string) $no['tree_id']);		
 	}
 	
 	drupal_json_output(array('descritores'=>$descritores));

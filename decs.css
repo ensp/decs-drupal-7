@@ -1,3 +1,80 @@
 
-#decs-search-field {
+/* utilidades */
+.decs-clearfix:after { visibility: hidden; display: block; font-size: 0; content: " "; clear: both; height: 0; }
+* html .decs-clearfix { zoom: 1; } /* IE6 */
+*:first-child+html .decs-clearfix { zoom: 1; } /* IE7 */
+
+/* containers */
+#decs-container {
+	border: 1px solid #ccc;
+	padding: 20px;
+}
+
+#edit-field-decs {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+#decs-descritores-encontrados-container {
+	margin: 0 0 20px 0;
+}
+
+/* descritores encontrados*/
+#decs-descritores-encontrados {
+	height: 200px;
+	overflow: auto;
+}
+	
+#decs-descritores-encontrados-mensagem {
+	height: 24px;
+	margin: 10px 0;
+	/* background: #dedede; */ 
+}
+
+#decs-mensagem {
+	margin: 0;
+	padding: 0;	
+	line-height: 24px;	
+	color: green;	
+}
+
+#decs-descritores-encontrados {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#decs-descritores-encontrados li {
+}
+
+#decs-descritores-encontrados li span {
+	cursor: pointer;
+	line-height: 180%;
+	padding-right: 30px;
+}
+
+/* descritores selecionados */
+#decs-descritores-selecionados {
+	list-style: none;
+	margin: 10px 0 0 0;
+	padding: 0;
+}
+#decs-descritores-selecionados li {
+	cursor:pointer;
+	display: block;
+	float: left;
+	padding: 0 5px;
+	margin-right: 5px;
+	margin-bottom: 5px;	
+	line-height: 170%;
+	background: #eaeaea;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;             	
+}
+
+/* classes dinâmicas */
+
+.decs-descritor-selecionado {
+	background: #eaeaea;	
 }
