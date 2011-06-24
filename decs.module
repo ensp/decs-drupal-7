@@ -75,22 +75,26 @@ function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langco
 		'	<input id="decs-botao-busca" class="form-submit" type="button" value="procurar"/>' .
 		'	<div id="decs-descritores-encontrados-container">' . 
 		'		<strong class="form-item-title">Resultado:</strong>' . 
-		'		<div id="decs-descritores-encontrados-mensagem"><p id="decs-mensagem"></p></div>' . 
+		'		<div id="decs-descritores-encontrados-mensagem"><p id="decs-mensagem1"></p></div>' .
+		'		<div id="decs-passos-container" class="decs-clearfix"><ul id="decs-passos"></ul></div>' . 
 		'		<ul id="decs-descritores-encontrados"></ul>' .
+		'		<span id="decs-base" style="display:none;">' . drupal_get_path('module', 'decs') . '</span>' .
 		'	</div>' .
+		'	<p id="decs-mensagem2"></p>' .
 		'	<div id="decs-descritores-selecionados-container" class="decs-clearfix">' . 
 		'		<strong class="form-item-title">Descritores Selecionados:</strong>' . 
 		'		<ul id="decs-descritores-selecionados" class="decs-clearfix"></ul>' . 
-		'	</div>' . 
+		'	</div>' .
+		'	<div id="decs-cortina"></div>' .		
 		'</div>',
 		'#attached' => array(
-			'js' => array(drupal_get_path('module', 'decs') . '/decs.js'),
+			'js'  => array(drupal_get_path('module', 'decs') . '/decs.js'),
 			'css' => array(drupal_get_path('module', 'decs') . '/decs.css'),			
 		),
 	);
 	
 	unset($element['#maxlength']);
-
+	
 	return $element;	
 }
 
@@ -117,6 +121,14 @@ function decs_menu() {
 		'type' => MENU_CALLBACK,
 	);
 	
+	$items['decs/descritor/%'] = array(
+		'title' => 'DeCS Ajax',
+		'page callback' => 'decs_descritor_callback',
+		'page arguments' => array(2),
+		'access arguments' => array(t('access content')),
+		'type' => MENU_CALLBACK,
+	);	
+	
 	return $items;
 }
 
@@ -124,7 +136,7 @@ function decs_menu() {
 
 function decs_descritores_callback($texto) {
 	
-	$xml = _decs_xml('http://decs.bvs.br/cgi-bin/mx/cgi=@vmx/decs/?bool=' . $texto);
+	$xml = _decs_xml('http://decs.bvs.br/cgi-bin/mx/cgi=@vmx/decs/?bool=' . urlencode($texto));
 	$nos = $xml->xpath('/decsvmx/decsws_response');	
 	
 	$descritores = array();
@@ -138,11 +150,30 @@ function decs_descritores_callback($texto) {
 	drupal_json_output(array('descritores'=>$descritores));
 }
 
+function decs_descritor_callback($id) {
+	
+	$xml = _decs_xml('http://decs.bvs.br/cgi-bin/mx/cgi=@vmx/decs?tree_id=' . $id);
+	
+	$termo = $xml->xpath("/decsvmx/decsws_response/tree/self/term_list[@lang='pt']/term");
+	$definicao = $xml->xpath("/decsvmx/decsws_response/record_list/record/definition/occ/@n");
+	$descendentes = $xml->xpath("/decsvmx/decsws_response/tree/descendants/term_list[@lang='pt']/term");
+	
+	$descritores = array();	
+	
+	foreach($descendentes as $descendente)		
+		$descritores[(string) $descendente] = array('arvore_id'=>(string) $descendente['tree_id']);			
+	
+	$resultado = array();		
+	$resultado['definicao'] = (string) $definicao[0];
+	$resultado['termo'] = (string) $termo[0];
+	$resultado['descritores'] = $descritores;
+	
+	drupal_json_output(array('resultado'=>$resultado));		
+}
+
 function _decs_xml($url) {		
 	return simplexml_load_file($url);
 }
-
-
 
 
 

@@ -1,80 +1,150 @@
 
-/* utilidades */
 .decs-clearfix:after { visibility: hidden; display: block; font-size: 0; content: " "; clear: both; height: 0; }
 * html .decs-clearfix { zoom: 1; } /* IE6 */
 *:first-child+html .decs-clearfix { zoom: 1; } /* IE7 */
 
-/* containers */
 #decs-container {
 	border: 1px solid #ccc;
 	padding: 20px;
 }
 
-#edit-field-decs {
-	margin-top: 20px;
-	margin-bottom: 20px;
-}
+/* lista de descritores encontrados */
 
 #decs-descritores-encontrados-container {
-	margin: 0 0 20px 0;
-}
-
-/* descritores encontrados*/
-#decs-descritores-encontrados {
-	height: 200px;
-	overflow: auto;
-}
-	
-#decs-descritores-encontrados-mensagem {
-	height: 24px;
-	margin: 10px 0;
-	/* background: #dedede; */ 
-}
-
-#decs-mensagem {
-	margin: 0;
-	padding: 0;	
-	line-height: 24px;	
-	color: green;	
+	margin: 0;	
 }
 
 #decs-descritores-encontrados {
 	list-style: none;
-	margin: 0;
+	margin: 10px 0 0 0;
 	padding: 0;
+	height: 208px;
+	overflow: auto;
+	/* background: #dedede;	*/
 }
+	#decs-descritores-encontrados li {
+		height: 26px;
+	}
 
-#decs-descritores-encontrados li {
-}
+	#decs-descritores-encontrados li span {
+		line-height: 26px;
+	}	
+		.decs-texto {
+			padding: 0 5px;			
+		}
+		
+		.decs-icone-mais {
+			background: #eaeaea;
+			color: #666;
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
+			border-radius: 5px;			
+		}	
 
-#decs-descritores-encontrados li span {
-	cursor: pointer;
-	line-height: 180%;
-	padding-right: 30px;
-}
+	#decs-descritores-encontrados-mensagem {
+		height: 24px;
+		margin: 10px 0 0 0;
+	}
+		#decs-mensagem1 {
+			margin: 0;
+			padding: 0;	
+			line-height: 24px;	
+			color: green;				
+		}
+		
+#decs-mensagem2 {
+	margin: 5px 0 0 0;
+	padding: 0;		
+	height: 24px;
+	line-height: 24px;
+	margin-bottom: 10px;	
+	color: orange;	
+	border-top: 1px #ccc solid;
+}			
 
-/* descritores selecionados */
+/* lista de descritores selecionados */
+
 #decs-descritores-selecionados {
 	list-style: none;
 	margin: 10px 0 0 0;
 	padding: 0;
 }
-#decs-descritores-selecionados li {
-	cursor:pointer;
-	display: block;
-	float: left;
-	padding: 0 5px;
-	margin-right: 5px;
-	margin-bottom: 5px;	
-	line-height: 170%;
-	background: #eaeaea;
+
+	#decs-descritores-selecionados li {
+		cursor:pointer;
+		display: block;
+		float: left;
+		padding: 0 5px;
+		margin-right: 5px;
+		margin-bottom: 5px;	
+		line-height: 170%;
+		background: #eaeaea;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		border-radius: 5px;             	
+	}	
+	
+#decs-cortina {
+	height: 208px;		
+	background: #fff url(loading.gif) center 30px no-repeat;	
+	position: absolute;	
+}	
+
+#decs-passos-container {
+	height: 20px;
+}
+
+	#decs-passos-container ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	#decs-passos-container ul li {
+		float: left;
+		padding: 0 5px 0 0;
+		line-height: 20px;
+		color: #000;
+	}	
+	
+	.decs-passo-com-link {
+		color: blue !important;
+		cursor: pointer;
+	}
+	
+	.decs-passo-sem-link {
+		color: #777;
+	}		
+	
+/* regras manipuladas no javascript */	
+	
+.decs-descritor-encontrado-over {
+	color: #000;          		
+	cursor: pointer;
+	background: #dedede;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-	border-radius: 5px;             	
+	border-radius: 5px;	
 }
 
-/* classes dinâmicas */
-
-.decs-descritor-selecionado {
-	background: #eaeaea;	
+.decs-descritor-encontrado-icone-over {
+	color: #000;          		
+	cursor: pointer;
+	background: #dedede;
 }
+
+.decs-descritor-selecionado-over {
+	color: #000;
+	background: #dedede !important;
+}	
+	
+/* ajuste aplicado ao tema default do drupal */
+
+#edit-field-decs {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}	
+
+
+
+
