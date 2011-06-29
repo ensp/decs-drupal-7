@@ -35,8 +35,10 @@
 		 * 		msg1:"",
 		 *		... 
 		 * };
-		 */		
-		
+		 */	
+		 
+		Decs.procurarDescritoresPorPalavraChave_Ativo = false;
+		Decs.obterDetalhesDoDescritor_Ativo = false; 		
 				
 		/*
 		 * MÉTODOS PARA GERENCIAR OS ITENS DAS LISTAS DE DESCRITORES ENCONTRADOS/SELECIONADOS
@@ -278,7 +280,7 @@
 			
 			var passosGravados = Decs.passos.length;
 			
-			var seta = (passosGravados > 0) ? "&raquo; " : "";
+			var seta = "&raquo; "; // var seta = (passosGravados > 0) ? "&raquo; " : "";			
 			var ultimoDescritor = (passosGravados > 0) ? Decs.passos[passosGravados-1].descritor : null;
 			
 			if (ultimoDescritor != descritor) { 							
@@ -328,7 +330,10 @@
 				if (Decs.passos[i].descritor == descritor)
 					passo = Decs.passos[i];
 			
-			Decs.obterDetalhesDoDescritor(passo.descritor, passo.id);
+			if (passo.id != null)
+				Decs.obterDetalhesDoDescritor(passo.descritor, passo.id);
+			else
+				Decs.procurarDescritoresPorPalavraChave(passo.descritor);
 			
 			/*
 			var passos_str = "";
@@ -345,9 +350,15 @@
 		 * AJAX
 		 */ 
 		
-		Decs.procurarDescritoresPorPalavraChave = function() {			
+		Decs.procurarDescritoresPorPalavraChave = function(palavraChave) {						
 			
-			var texto = $("#decs-campo-busca").val();			
+			// flag para evitar execução paralela desta função
+			if (Decs.procurarDescritoresPorPalavraChave_Ativo)
+				return false;
+			else	
+				Decs.procurarDescritoresPorPalavraChave_Ativo = true;
+				
+			var texto = (palavraChave != null) ? palavraChave : $("#decs-campo-busca").val();			
 			
 			if (texto.split(" ").join("") == "") {
 				alert(Decs.obterMensagem("msg6"));
@@ -365,24 +376,32 @@
 			Decs.inicializarPassos();			
 			Decs.removerTodosOsItensDaListaDeDescritoresEncontrados();
 				
-			jQuery.getJSON(enderecoAjax, function(dados) {				
+			jQuery.getJSON(enderecoAjax, function(dados) {								
 				Decs.adicionarPasso(texto, null);
 				Decs.atualizarListaDeDescritoresEncontrados(dados.descritores);
+				Decs.procurarDescritoresPorPalavraChave_Ativo = false;
 			});
 		}		
 		
 		Decs.obterDetalhesDoDescritor = function(descritor, id) {
 			
+			// flag para evitar execução paralela desta função
+			if(Decs.obterDetalhesDoDescritor_Ativo)
+				return false;
+			else	
+				Decs.obterDetalhesDoDescritor_Ativo = true;
+			
 			var enderecoAjax = Decs.ENDERECO_AJAX + "?q=decs/descritor/" + id;
 			
 			Decs.mostrarCortinaDeCarregamento();
 			
-			jQuery.getJSON(enderecoAjax, function(dados) {				
+			jQuery.getJSON(enderecoAjax, function(dados) {								
 				// dados.resultado;
 				Decs.adicionarPasso(descritor, id);
 				Decs.removerTodosOsItensDaListaDeDescritoresEncontrados();	
 				Decs.atualizarListaDeDescritoresEncontrados(dados.resultado.descritores);			
 				Decs.esconderCortinaDeCarregamento();
+				Decs.obterDetalhesDoDescritor_Ativo = false;
 			});				
 		}
 		
@@ -445,7 +464,7 @@
 			Decs.carregarListaDeDescritoresSelecionados();					
 
 			$("#decs-botao-busca").click(function() {
-				Decs.procurarDescritoresPorPalavraChave();
+				Decs.procurarDescritoresPorPalavraChave(null);
 			});
 		}
 		

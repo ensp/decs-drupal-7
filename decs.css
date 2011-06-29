@@ -25,7 +25,7 @@
 	#decs-descritores-encontrados li {
 		height: 26px;
 	}
-
+	
 	#decs-descritores-encontrados li span {
 		line-height: 26px;
 	}	
@@ -43,7 +43,7 @@
 
 	#decs-descritores-encontrados-mensagem {
 		height: 24px;
-		margin: 10px 0 0 0;
+		margin: 0 0 0 0;
 	}
 		#decs-mensagem1 {
 			margin: 0;
