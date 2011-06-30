@@ -76,8 +76,11 @@ function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langco
 		'	<div id="decs-descritores-encontrados-container">' . 
 		'		<strong class="form-item-title">Resultado:</strong>' . 
 		'		<div id="decs-descritores-encontrados-mensagem"><p id="decs-mensagem1"></p></div>' .
-		'		<div id="decs-passos-container" class="decs-clearfix"><ul id="decs-passos"></ul></div>' . 
-		'		<ul id="decs-descritores-encontrados"></ul>' .
+		'		<div id="decs-passos-container" class="decs-clearfix"><ul id="decs-passos"></ul></div>' .
+		'		<div id="decs-descritor-cortina-container">' .		 		
+		'			<div id="decs-descritor-definicao-container"><p class="decs-descritor-definicao-texto"></p></div>' .		 
+		'			<ul id="decs-descritores-encontrados"></ul>' .
+		'		</div>' .		
 		'		<span id="decs-base" style="display:none;">' . drupal_get_path('module', 'decs') . '</span>' .
 		'	</div>' .
 		'	<p id="decs-mensagem2"></p>' .

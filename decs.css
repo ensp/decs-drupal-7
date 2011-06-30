@@ -113,8 +113,14 @@
 	}
 	
 	.decs-passo-sem-link {
-		color: #777;
+		color: #777;		
 	}		
+	
+.decs-descritor-definicao-texto	em {
+	color: green;
+	display: block;
+	padding-top: 10px;
+}
 	
 /* regras manipuladas no javascript */	
 	

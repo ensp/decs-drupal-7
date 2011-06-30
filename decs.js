@@ -21,9 +21,9 @@
 		Decs.mensagems_ptbr = {
 			msg1:"Deseja remover o descritor: ",
 			msg2:"mostrar descendentes do termo", // deletar esta mensagem
-			msg3:"nenhum descritor encontrado",
-			msg4:"1 descritor encontrado",
-			msg5:" descritores encontrados",
+			msg3:"nenhum descritor encontrado para:",
+			msg4:"1 descritor encontrado para:",
+			msg5:" descritores encontrados para:",
 			msg6:"O campo de busca está vazio.",			
 			msg7:"use a barra de rolagem para ver os descritores ocultos"			
 		};
@@ -39,6 +39,7 @@
 		 
 		Decs.procurarDescritoresPorPalavraChave_Ativo = false;
 		Decs.obterDetalhesDoDescritor_Ativo = false; 		
+		
 				
 		/*
 		 * MÉTODOS PARA GERENCIAR OS ITENS DAS LISTAS DE DESCRITORES ENCONTRADOS/SELECIONADOS
@@ -84,7 +85,7 @@
 			
 			$("#decs-descritores-encontrados").append(
 			"<li><span class=\"decs-texto\">" + descritor + "</span>&nbsp;<span class=\"decs-icone-mais\">&nbsp;+&nbsp;</span></li>");					
-			
+						
 			// clique do termo para adiciona-lo na lista de termos selecinados    
 			$("#decs-descritores-encontrados li:last span:first").click(function() {
 				Decs.adicionarDescritorNaListaDeDescritoresSelecionados(descritor);
@@ -102,7 +103,6 @@
 
 			// clique do ícone navegar nos descendentes do termo
 			$("#decs-descritores-encontrados li:last span:last").click(function() {
-				// alert(id);
 				Decs.obterDetalhesDoDescritor(descritor, id);				
 			});				
 			
@@ -114,7 +114,7 @@
 			// mouseout do ícone para restaurar aparência default
 			$("#decs-descritores-encontrados li:last span:last").mouseout(function() {
 				$(this).removeClass("decs-descritor-encontrado-icone-over");				
-			});				
+			});	
 		}		
 		
 		// Remove um descritor da lista de descritores selecionados.
@@ -148,23 +148,25 @@
 			}	
 		}
 		
-		// Limpa lista de descritores encontrados para nova carga
+		// Limpa lista de descritores encontrados para nova carga.
 		Decs.removerTodosOsItensDaListaDeDescritoresEncontrados = function() {
-			$("#decs-descritores-encontrados li").remove();				
+			$("#decs-descritores-encontrados li").remove();		
 		}
 		
-		// recebe resultado da busca e atualiza lista de descritores encontrados 
-		Decs.atualizarListaDeDescritoresEncontrados = function(dados) {
+		// Recebe resultado da busca e atualiza lista de descritores encontrados. 
+		Decs.atualizarListaDeDescritoresEncontrados = function(dados, mostrarQuantidadeDeDescritoresEncontrados) {
 						
 			var total = 0;
+			var mensagem_alertaDeScroll = "";
+			var mensagem_quatidade = "";
 					
 			for (item in dados) {				
 				id = dados[item]['arvore_id'];
 				Decs.adicionarDescritorNaListaDeDescritoresEncontrados(item, id);
 				total++;
 			}
-						
-			var mensagem_alertaDeScroll = "";
+			
+			// mensagem de ajuda para usuário quando parte do resultado estiver oculta com barra de rolagem 				
 			
 			if (total > 0) {
 				if ($("#decs-descritores-encontrados li:last").offset().top + $("#decs-descritores-encontrados li:last").outerHeight() >
@@ -173,20 +175,31 @@
 				}
 			}
 			
-			var mensagem_quatidade = "";
-			
-			if (total == 0)
-				mensagem_quatidade = Decs.obterMensagem("msg3");
-			else if (total == 1)
-				mensagem_quatidade	= Decs.obterMensagem("msg4");
-			else
-				mensagem_quatidade	= total + Decs.obterMensagem("msg5");			
-			
-			$("#decs-mensagem1").text(mensagem_quatidade);
-			$("#decs-mensagem1").fadeIn();	
-
 			$("#decs-mensagem2").text(mensagem_alertaDeScroll);
-			$("#decs-mensagem2").fadeIn();		
+			$("#decs-mensagem2").fadeIn();			
+			
+			// mensagem com quantidade de descritores encontrados
+			// esta mensagem só aparece para o resultado de uma busca   
+			if (mostrarQuantidadeDeDescritoresEncontrados) {
+								
+				if (total == 0)
+					mensagem_quatidade = Decs.obterMensagem("msg3");
+				else if (total == 1)
+					mensagem_quatidade	= Decs.obterMensagem("msg4");
+				else
+					mensagem_quatidade	= total + Decs.obterMensagem("msg5");			
+				
+				if (mensagem_quatidade != "")
+					mensagem_quatidade += " " + $("#decs-campo-busca").val();	
+				
+				$("#decs-mensagem1").text(mensagem_quatidade);
+				$("#decs-mensagem1").fadeIn();
+			
+			// a mensagem não aparece quando os detalhes (descritores descendentes) de um descritor estão em exibição
+			} else {
+				
+				$("#decs-mensagem1").fadeOut();			
+			}	
 			
 			Decs.esconderCortinaDeCarregamento();					
 		}		
@@ -254,19 +267,39 @@
 			$("#decs-descriptors-field").val(valorAtualizadoDoCampoString);						
 		}
 		
-		// mostra cortina de carregamento
+		// Mostra cortina de carregamento.
 		Decs.mostrarCortinaDeCarregamento = function() {						
-			Decs.redimensionarCortina();			
 			$("#decs-cortina").fadeIn();	
 		}
 		
-
-		// esconder cortina de carregamento
+		// Esconde cortina de carregamento.
 		Decs.esconderCortinaDeCarregamento = function() {				
 			$("#decs-cortina").fadeOut();	
 		}		
 		
+		// Mostra detalhes do descritor.
+		Decs.mostrarDefinicaoDoDescritor = function(definicao, quantidadeDeDescendentes) {
+			
+			var descendentes = "<em>Nenhum descritor relacionado.</em>"; 
+			
+			if (quantidadeDeDescendentes == 1)
+				descendentes = "<em>Descritor Relacionado:</em>";		
+			else if (quantidadeDeDescendentes > 1)							
+				descendentes = "<em>Descritores Relacionados:</em>";	
+			
+			definicao += " " + descendentes;
+					
+			$("#decs-descritor-definicao-container .decs-descritor-definicao-texto").html(definicao);			
+			
+			Decs.posicionarCortina();
+		}
 		
+		// Esconde detalhes do descritor.
+		Decs.esconderDefinicaoDoDescritor = function() {			
+			$("#decs-descritor-definicao-container .decs-descritor-definicao-texto").text("");						
+			Decs.posicionarCortina();
+		}
+				
 		/*
 		 * PASSOS (migalha de pão)
 		 */ 		
@@ -375,10 +408,11 @@
 			
 			Decs.inicializarPassos();			
 			Decs.removerTodosOsItensDaListaDeDescritoresEncontrados();
+			Decs.esconderDefinicaoDoDescritor();
 				
 			jQuery.getJSON(enderecoAjax, function(dados) {								
 				Decs.adicionarPasso(texto, null);
-				Decs.atualizarListaDeDescritoresEncontrados(dados.descritores);
+				Decs.atualizarListaDeDescritoresEncontrados(dados.descritores, true);
 				Decs.procurarDescritoresPorPalavraChave_Ativo = false;
 			});
 		}		
@@ -394,12 +428,12 @@
 			var enderecoAjax = Decs.ENDERECO_AJAX + "?q=decs/descritor/" + id;
 			
 			Decs.mostrarCortinaDeCarregamento();
-			
+						
 			jQuery.getJSON(enderecoAjax, function(dados) {								
-				// dados.resultado;
 				Decs.adicionarPasso(descritor, id);
 				Decs.removerTodosOsItensDaListaDeDescritoresEncontrados();	
-				Decs.atualizarListaDeDescritoresEncontrados(dados.resultado.descritores);			
+				Decs.atualizarListaDeDescritoresEncontrados(dados.resultado.descritores, false);			
+				Decs.mostrarDefinicaoDoDescritor(dados.resultado.definicao, Decs.contarPropriedades(dados.resultado.descritores));
 				Decs.esconderCortinaDeCarregamento();
 				Decs.obterDetalhesDoDescritor_Ativo = false;
 			});				
@@ -410,14 +444,15 @@
 		 * Funções Auxiliares
 		 */ 
 		 
-		Decs.redimensionarCortina = function() {			
+		Decs.posicionarCortina = function() {			
+			
+			var c = $("#decs-descritor-cortina-container");
+			var p = c.position();
+			var t = Math.round(p.top) + "px"; 
+			var w = Math.round(c.innerWidth())  + "px";
+			var h = Math.round(c.innerHeight()) + "px";			
 						
-			// configura dimenções da cortina de carregamento
-			var c = $("#decs-descritores-encontrados");
-			var w = c.innerWidth()  + "px";
-			var h = c.innerHeight() + "px";
-						
-			$("#decs-cortina").css({ width:w, height:h });		
+			$("#decs-cortina").css({ width:w, height:h, top:t });		
 		}
 		
 		Decs.obterMensagem = function(idDaMensagem) {
@@ -441,21 +476,32 @@
 			else
 				return mensagens[idDaMensagem];
 		}
+		
+		// Dump recursivo para debug.
+		Decs.dumpRecursivo = function(obj, shift) {								
+			shift = (shift) ? "-----" + shift : "-----";				
+			for(item in obj)								
+				if (typeof(obj[item]) == "object")
+					Decs.dumpRecursivo(obj[item], shift);	
+				else
+					console.log(shift + " " + item + ": " + obj[item]);
+		}		
+				
+		// Conta propriedades em um objeto.		
+		Decs.contarPropriedades = function(objeto) {
+			var total = 0;
+			for (i in objeto)
+				total++;
+			return total;	
+		}		
 				
 		// Inicializador
 		Decs.inicializar = function() {			
 			
 			// oculta campo decs_field
 			$("#decs-descriptors-field").css("display", "none");
-
-			// posiciona cortina de carregamento						
-			var r = $("#decs-descritores-encontrados");
-			var t = Math.round(r.offset().top);
-			var l = Math.round(r.offset().left);
-						
-			$("#decs-cortina").offset({ top:t, left:l });
 			
-			Decs.redimensionarCortina();
+			Decs.posicionarCortina();
 						
 			// esconde cortina de carregamento
 			$("#decs-cortina").hide();
