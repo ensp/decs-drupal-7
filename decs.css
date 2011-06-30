@@ -102,7 +102,7 @@
 
 	#decs-passos-container ul li {
 		float: left;
-		padding: 0 5px 0 0;
+		padding: 0 5px;
 		line-height: 20px;
 		color: #000;
 	}	
@@ -115,6 +115,15 @@
 	.decs-passo-sem-link {
 		color: #777;		
 	}		
+	
+	.decs-passo-descritor-over {
+		color: #000;          		
+		cursor: pointer;
+		background: #dedede;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		border-radius: 5px;	
+	}
 	
 .decs-descritor-definicao-texto	em {
 	color: green;

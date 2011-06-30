@@ -25,7 +25,7 @@
 			msg4:"1 descritor encontrado para:",
 			msg5:" descritores encontrados para:",
 			msg6:"O campo de busca está vazio.",			
-			msg7:"use a barra de rolagem para ver os descritores ocultos"			
+			msg7:"use a barra de rolagem à direita para ver os descritores ocultos"			
 		};
 		
 		/*
@@ -329,6 +329,8 @@
 			var lis = $("#decs-passos li");
 			
 			$(lis).unbind("click");
+			$(lis).unbind("mouseover");
+			$(lis).unbind("mouseout");
 			$(lis).removeClass("decs-passo-com-link");
 			
 			for (i=0; i<lis.length-1; i++) {
@@ -337,6 +339,25 @@
 					Decs.voltarParaUmPassoAnterior(this);
 				});
 			}
+			
+			if (lis.length > 1) {
+				
+				$("#decs-passos li:last").mouseover(function()
+				{
+					$(this).addClass("decs-passo-descritor-over");	
+				});				
+				
+				$("#decs-passos li:last").mouseout(function()
+				{
+					$(this).removeClass("decs-passo-descritor-over");	
+				});					
+				
+				$("#decs-passos li:last").click(function()
+				{
+					var descritor = jQuery.trim($(this).text().replace("» ", ""));
+					Decs.adicionarDescritorNaListaDeDescritoresSelecionados(descritor);	
+				});				
+			}	
 		}
 		
 		Decs.voltarParaUmPassoAnterior = function(passo) {			
