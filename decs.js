@@ -8,10 +8,6 @@
 		
 		var Decs = {};
 		
-		Decs.ENDERECO_AJAX = "http://localhost/drupal7_site1/";
-		
-		Decs.ALTURA_DA_CAIXA_DE_RESULTADO = 200;		
-		
 		Decs.IDIOMA_DEFAULT = "ptbr";
 		
 		Decs.passos = new Array();
@@ -19,13 +15,13 @@
 		Decs.idioma = null; 
 		
 		Decs.mensagems_ptbr = {
-			msg1:"Deseja remover o descritor: ",
-			msg2:"mostrar descendentes do termo", // deletar esta mensagem
+			msg1:"Deseja remover o descritor:",
+			msg2:"já está na lista de descritores selecionados.",
 			msg3:"nenhum descritor encontrado para:",
 			msg4:"1 descritor encontrado para:",
-			msg5:" descritores encontrados para:",
+			msg5:"descritores encontrados para:",
 			msg6:"O campo de busca está vazio.",			
-			msg7:"use a barra de rolagem à direita para ver os descritores ocultos"			
+			msg7:"Use a barra de rolagem à direita para ver os descritores ocultos."			
 		};
 		
 		/*
@@ -37,6 +33,7 @@
 		 * };
 		 */	
 		 
+		Decs.alturaDaCaixaDeResultado = null; 
 		Decs.procurarDescritoresPorPalavraChave_Ativo = false;
 		Decs.obterDetalhesDoDescritor_Ativo = false; 		
 		
@@ -50,7 +47,7 @@
 			$("#decs-descritores-selecionados").append('<li>' + descritor + '</li>');
 						
 			$("#decs-descritores-selecionados li:last").click(function() {					
-				if (confirm(Decs.obterMensagem("msg1") + descritor)) // msg: Deseja remover o descritor 					
+				if (confirm(Decs.obterMensagem("msg1") + " " + descritor)) // msg: Deseja remover o descritor 					
 					Decs.removerDescritorDaListaDeDescritoresSelecionados(descritor);
 			});			
 			
@@ -61,7 +58,7 @@
 			$("#decs-descritores-selecionados li:last").mouseout(function() {
 				$(this).removeClass("decs-descritor-selecionado-over"); 					
 			});						
-		} 
+		}; 
 				
 		// Adiciona um descritor na lista de descritores selecionados.
 		Decs.adicionarDescritorNaListaDeDescritoresSelecionados = function(descritor) {
@@ -77,8 +74,11 @@
 			if (jQuery.inArray(descritor, descritoresNaLista) == -1) {				
 				Decs.criarItemParaListaDeDescritoresSelecionados(descritor);													
 				Decs.adicionarDescritorNoCampoOculto(descritor);
+				Decs.fade.fadeIt("decs-descritores-selecionados-titulo");
+			} else {
+				alert("\"" + descritor + "\" " + Decs.obterMensagem("msg2"));	
 			}			
-		}
+		};
 		
 		// Adiciona um descritor na lista de descritores encontrados.
 		Decs.adicionarDescritorNaListaDeDescritoresEncontrados = function(descritor, id) {			
@@ -115,7 +115,7 @@
 			$("#decs-descritores-encontrados li:last span:last").mouseout(function() {
 				$(this).removeClass("decs-descritor-encontrado-icone-over");				
 			});	
-		}		
+		};		
 		
 		// Remove um descritor da lista de descritores selecionados.
 		Decs.removerDescritorDaListaDeDescritoresSelecionados = function(descritor) {
@@ -126,13 +126,15 @@
 			for (var i=0; i<itensDaListaDeDescritores.length; i++) {
 				if ($(itensDaListaDeDescritores[i]).text() == descritor) {
 					$(itensDaListaDeDescritores[i]).remove();		
-					removerDescritorDoCampoOculto = true;	
+					removerDescritorDoCampoOculto = true;						
 				}	
 			}	
 			
-			if (removerDescritorDoCampoOculto)
+			if (removerDescritorDoCampoOculto) {
 				Decs.removerDescritorDoCampoOculto(descritor);
-		}
+				Decs.fade.fadeIt("decs-descritores-selecionados-titulo");
+			}	
+		};
 		
 		// Carrega lista de descritores selecionados.
 		Decs.carregarListaDeDescritoresSelecionados = function() {
@@ -146,12 +148,12 @@
 				for (var i=0; i<valorPreenchidoDoCampoArray.length; i++)					
 					Decs.criarItemParaListaDeDescritoresSelecionados(valorPreenchidoDoCampoArray[i]);
 			}	
-		}
+		};
 		
 		// Limpa lista de descritores encontrados para nova carga.
 		Decs.removerTodosOsItensDaListaDeDescritoresEncontrados = function() {
 			$("#decs-descritores-encontrados li").remove();		
-		}
+		};
 		
 		// Recebe resultado da busca e atualiza lista de descritores encontrados. 
 		Decs.atualizarListaDeDescritoresEncontrados = function(dados, mostrarQuantidadeDeDescritoresEncontrados) {
@@ -170,7 +172,7 @@
 			
 			if (total > 0) {
 				if ($("#decs-descritores-encontrados li:last").offset().top + $("#decs-descritores-encontrados li:last").outerHeight() >
-					$("#decs-descritores-encontrados").offset().top + Decs.ALTURA_DA_CAIXA_DE_RESULTADO) {
+					$("#decs-descritores-encontrados").offset().top + Decs.alturaDaCaixaDeResultado) {
 					mensagem_alertaDeScroll = Decs.obterMensagem("msg7");
 				}
 			}
@@ -187,7 +189,7 @@
 				else if (total == 1)
 					mensagem_quatidade	= Decs.obterMensagem("msg4");
 				else
-					mensagem_quatidade	= total + Decs.obterMensagem("msg5");			
+					mensagem_quatidade	= total + " " + Decs.obterMensagem("msg5");			
 				
 				if (mensagem_quatidade != "")
 					mensagem_quatidade += " " + $("#decs-campo-busca").val();	
@@ -202,7 +204,7 @@
 			}	
 			
 			Decs.esconderCortinaDeCarregamento();					
-		}		
+		};		
 		
 		
 		/*
@@ -233,7 +235,7 @@
 			}
 			
 			$("#decs-descriptors-field").val(valorAtualizadoDoCampoString);			
-		} 		
+		}; 		
 		
 		// Remove um decritor do campo oculto,
 		// chamada no método Decs.removerDescritorDaListaDeDescritoresSelecionados.  
@@ -265,17 +267,17 @@
 			}
 			
 			$("#decs-descriptors-field").val(valorAtualizadoDoCampoString);						
-		}
+		};
 		
 		// Mostra cortina de carregamento.
 		Decs.mostrarCortinaDeCarregamento = function() {						
 			$("#decs-cortina").fadeIn();	
-		}
+		};
 		
 		// Esconde cortina de carregamento.
 		Decs.esconderCortinaDeCarregamento = function() {				
 			$("#decs-cortina").fadeOut();	
-		}		
+		};		
 		
 		// Mostra detalhes do descritor.
 		Decs.mostrarDefinicaoDoDescritor = function(definicao, quantidadeDeDescendentes) {
@@ -292,13 +294,13 @@
 			$("#decs-descritor-definicao-container .decs-descritor-definicao-texto").html(definicao);			
 			
 			Decs.posicionarCortina();
-		}
+		};
 		
 		// Esconde detalhes do descritor.
 		Decs.esconderDefinicaoDoDescritor = function() {			
 			$("#decs-descritor-definicao-container .decs-descritor-definicao-texto").text("");						
 			Decs.posicionarCortina();
-		}
+		};
 				
 		/*
 		 * PASSOS (migalha de pão)
@@ -307,7 +309,7 @@
 		Decs.inicializarPassos = function(descritor, id) {
 			Decs.passos = new Array();
 			$("#decs-passos li").remove();		
-		}
+		};
 					
 		Decs.adicionarPasso = function(descritor, id) {			
 			
@@ -322,7 +324,7 @@
 			}
 			
 			Decs.atualizarPassos();		
-		}
+		};
 		
 		Decs.atualizarPassos = function() {
 			
@@ -358,7 +360,7 @@
 					Decs.adicionarDescritorNaListaDeDescritoresSelecionados(descritor);	
 				});				
 			}	
-		}
+		};
 		
 		Decs.voltarParaUmPassoAnterior = function(passo) {			
 			
@@ -397,7 +399,7 @@
 							
 			console.log(passos_str);	
 			*/ 
-		}
+		};
 		
 		
 		/*
@@ -420,7 +422,7 @@
 				return false;
 			}	
 			
-			var enderecoAjax = Decs.ENDERECO_AJAX + "?q=decs/descritores/" + escape(texto);
+			var enderecoAjax = unescape($("#decs-base").text()) + "/?q=decs/descritores/" + escape(texto);
 			
 			Decs.mostrarCortinaDeCarregamento();
 			
@@ -436,7 +438,7 @@
 				Decs.atualizarListaDeDescritoresEncontrados(dados.descritores, true);
 				Decs.procurarDescritoresPorPalavraChave_Ativo = false;
 			});
-		}		
+		};		
 		
 		Decs.obterDetalhesDoDescritor = function(descritor, id) {
 			
@@ -446,7 +448,7 @@
 			else	
 				Decs.obterDetalhesDoDescritor_Ativo = true;
 			
-			var enderecoAjax = Decs.ENDERECO_AJAX + "?q=decs/descritor/" + id;
+			var enderecoAjax = unescape($("#decs-base").text()) + "/?q=decs/descritor/" + id;
 			
 			Decs.mostrarCortinaDeCarregamento();
 						
@@ -458,7 +460,7 @@
 				Decs.esconderCortinaDeCarregamento();
 				Decs.obterDetalhesDoDescritor_Ativo = false;
 			});				
-		}
+		};
 		
 		
 		/*
@@ -474,7 +476,7 @@
 			var h = Math.round(c.innerHeight()) + "px";			
 						
 			$("#decs-cortina").css({ width:w, height:h, top:t });		
-		}
+		};
 		
 		Decs.obterMensagem = function(idDaMensagem) {
 			
@@ -496,7 +498,7 @@
 				return null;
 			else
 				return mensagens[idDaMensagem];
-		}
+		};
 		
 		// Dump recursivo para debug.
 		Decs.dumpRecursivo = function(obj, shift) {								
@@ -506,7 +508,7 @@
 					Decs.dumpRecursivo(obj[item], shift);	
 				else
 					console.log(shift + " " + item + ": " + obj[item]);
-		}		
+		};		
 				
 		// Conta propriedades em um objeto.		
 		Decs.contarPropriedades = function(objeto) {
@@ -514,7 +516,38 @@
 			for (i in objeto)
 				total++;
 			return total;	
-		}		
+		};					
+				
+		// Fade
+		Decs.fade = {
+			
+			b : ["00","11","22","33","44","55","66","77","88","99","aa","bb","cc","dd","ee","ff"],	
+			count : 0,
+			delay : 100,
+			timeoutId : 0,
+			ids : null,
+				
+			fadeIt : function (ids) {				
+				clearTimeout(Decs.fade.timeoutId);
+				Decs.fade.ids = ids;
+				Decs.fade.timeoutId = setTimeout(Decs.fade.setBackgroundColor, Decs.fade.delay); 
+			},	
+			
+			setBackgroundColor : function () {		
+				
+				var ids = Decs.fade.ids.toString();
+				
+				ids = ids.split(",");
+				
+				for (var i=0; i<ids.length; i++)
+					document.getElementById(ids[i]).style.backgroundColor = "#ffff"+ Decs.fade.b[Decs.fade.count];		
+				
+				if (Decs.fade.count++ < Decs.fade.b.length - 1)		
+					Decs.fade.fadeIt(ids);	
+				else
+					Decs.fade.count = 0;		
+			}				
+		}; 		
 				
 		// Inicializador
 		Decs.inicializar = function() {			
@@ -533,10 +566,15 @@
 			$("#decs-botao-busca").click(function() {
 				Decs.procurarDescritoresPorPalavraChave(null);
 			});
-		}
+			
+			Decs.alturaDaCaixaDeResultado = $("#decs-descritores-encontrados").css('height').replace("px", "");
+			
+			console.log(Decs.alturaDaCaixaDeResultado);
+		};
 		
-		Decs.inicializar();
-	});
+		Decs.inicializar();	
+	});			
+			
 })(jQuery);
 
 

@@ -61,6 +61,10 @@ function decs_field_widget_info() {
  */
 function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {	
 	
+	global $base_url;
+	
+	// drupal_get_path('module', 'decs'));
+	
 	$element['descriptors'] = array();
 	
 	$element['descriptors'] += array(
@@ -70,25 +74,27 @@ function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langco
 		'#maxlength'=>'10000000',
 		'#default_value' => isset($items[$delta]['descriptors']) ? $items[$delta]['descriptors'] : '',
 		'#suffix' => 
-		'<div id="decs-container">' . 
-		'	<input id="decs-campo-busca" class="form-text" type="text" value=""/>' . 
-		'	<input id="decs-botao-busca" class="form-submit" type="button" value="procurar"/>' .
+		'<div id="decs-container">' . 		
+		'	<div id="decs-descritores-selecionados-container" class="decs-clearfix">' . 
+		'		<strong id="decs-descritores-selecionados-titulo" class="form-item-title">Descritores Selecionados:</strong>' . 
+		'		<ul id="decs-descritores-selecionados" class="decs-clearfix"></ul>' . 
+		'	</div>' .
+		'	<div id="decs-cortina"></div>' .				
+		'	<strong class="form-item-title">Vocabulário DeCS:</strong>' . 
+		'	<div id="decs-busca-container">' .		
+		'		<input id="decs-campo-busca" class="form-text" type="text" value=""/>' . 
+		'		<input id="decs-botao-busca" class="form-submit" type="button" value="procurar"/>' .
+		'	</div>' .
 		'	<div id="decs-descritores-encontrados-container">' . 
-		'		<strong class="form-item-title">Resultado:</strong>' . 
 		'		<div id="decs-descritores-encontrados-mensagem"><p id="decs-mensagem1"></p></div>' .
 		'		<div id="decs-passos-container" class="decs-clearfix"><ul id="decs-passos"></ul></div>' .
 		'		<div id="decs-descritor-cortina-container">' .		 		
 		'			<div id="decs-descritor-definicao-container"><p class="decs-descritor-definicao-texto"></p></div>' .		 
 		'			<ul id="decs-descritores-encontrados"></ul>' .
 		'		</div>' .		
-		'		<span id="decs-base" style="display:none;">' . drupal_get_path('module', 'decs') . '</span>' .
+		'		<span id="decs-base" style="display:none;">' . _decs_encode($base_url) . '</span>' .
 		'	</div>' .
-		'	<p id="decs-mensagem2"></p>' .
-		'	<div id="decs-descritores-selecionados-container" class="decs-clearfix">' . 
-		'		<strong class="form-item-title">Descritores Selecionados:</strong>' . 
-		'		<ul id="decs-descritores-selecionados" class="decs-clearfix"></ul>' . 
-		'	</div>' .
-		'	<div id="decs-cortina"></div>' .		
+		'	<p id="decs-mensagem2"></p>' .			
 		'</div>',
 		'#attached' => array(
 			'js'  => array(drupal_get_path('module', 'decs') . '/decs.js'),
@@ -178,6 +184,14 @@ function _decs_xml($url) {
 	return simplexml_load_file($url);
 }
 
+// Extra
 
+function _decs_encode($input) {
+    $temp = '';
+    $length = strlen($input);
+    for($i = 0; $i < $length; $i++)
+        $temp .= '%' . bin2hex($input[$i]);
+    return $temp;
+} 
 
 

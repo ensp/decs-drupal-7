@@ -8,6 +8,11 @@
 	padding: 20px;
 }
 
+/* busca */
+#decs-busca-container {
+	padding-top: 10px;
+}
+
 /* lista de descritores encontrados */
 
 #decs-descritores-encontrados-container {
@@ -57,32 +62,37 @@
 	padding: 0;		
 	height: 24px;
 	line-height: 24px;
-	margin-bottom: 10px;	
 	color: orange;	
 	border-top: 1px #ccc solid;
 }			
 
 /* lista de descritores selecionados */
 
-#decs-descritores-selecionados {
-	list-style: none;
-	margin: 10px 0 0 0;
-	padding: 0;
+#decs-descritores-selecionados-container {
+	margin: 0 0 10px 0;	
+	padding-bottom: 10px;
+	border-bottom: 1px #ccc solid;
 }
 
-	#decs-descritores-selecionados li {
-		cursor:pointer;
-		display: block;
-		float: left;
-		padding: 0 5px;
-		margin-right: 5px;
-		margin-bottom: 5px;	
-		line-height: 170%;
-		background: #eaeaea;
-		-moz-border-radius: 5px;
-		-webkit-border-radius: 5px;
-		border-radius: 5px;             	
-	}	
+	#decs-descritores-selecionados {
+		list-style: none;
+		margin: 10px 0 0 0;
+		padding: 0;
+	}
+
+		#decs-descritores-selecionados li {
+			cursor:pointer;
+			display: block;
+			float: left;
+			padding: 0 5px;
+			margin-right: 5px;
+			margin-bottom: 5px;	
+			line-height: 170%;
+			background: #eaeaea;
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
+			border-radius: 5px;             	
+		}	
 	
 #decs-cortina {
 	height: 208px;		
