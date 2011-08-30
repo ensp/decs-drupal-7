@@ -67,7 +67,8 @@
     msg4:"1 descritor encontrado para:",
     msg5:"descritores encontrados para:",
     msg6:"O campo de busca está vazio.",
-    msg7:"Use a barra de rolagem à direita para ver os descritores ocultos."
+    msg7:"Use a barra de rolagem à direita para ver os descritores ocultos.",
+    msg8:"Não foi possível completar sua requisição. Verifique sua conexão com a Internet."
     };
     
     // Mensagens em outro idioma, exemplo: 
@@ -82,8 +83,9 @@
     // Altura da caixa de resultado com a lista de descritores encontrados.
     Decs.alturaDaCaixaDeResultado = null; 
 
-    // Referência para função que realiza a interação com o serviço decs. 
+    // Referências para as funções que realizam a interação com o serviço decs. 
     Decs.procurarDescritoresPorPalavraChave_ajax = null;
+    Decs.obterDetalhesDoDescritor_ajax = null;
     
     /**
      * MANIPULAÇÕES DA INTERFACE. 
@@ -688,7 +690,6 @@
       var enderecoAjax = unescape($("#decs-base").text()) + "/?q=decs/descritores/" + escape(texto) + "|" + idioma;
       var segundosRestantes = Decs.TEMPO_MAXIMO_AJAX;  
       var intervalId = null;
-      var ajax = null;
 
       // Teste que verifica se existe uma string para a busca.
       if (texto.split(" ").join("") == "") {
@@ -706,7 +707,7 @@
       $("#decs-mensagem1").hide();
       $("#decs-mensagem2").text("");
 
-      // Conta tempo de espera da resposta do DeCS.
+      // Inicializa contador para contar o tempo de espera da resposta do DeCS.
 
       clearInterval(intervalId);
 
@@ -761,10 +762,46 @@
     Decs.obterDetalhesDoDescritor = function(descritor, id, idioma) {
 
       var enderecoAjax = unescape($("#decs-base").text()) + "/?q=decs/descritor/" + id + "|" + idioma;
+      var segundosRestantes = Decs.TEMPO_MAXIMO_AJAX;  
+      var intervalId = null;
 
       Decs.mostrarCortinaDeCarregamento();
 
-      jQuery.getJSON(enderecoAjax, function(dados) {
+      // Inicializa contador para contar o tempo de espera da resposta do DeCS.
+
+      clearInterval(intervalId);
+
+      intervalId = setInterval(function() {
+
+        // Teste para verificar se o limite de espera foi atingido.
+        if (segundosRestantes > 0) {
+
+          // Atualiza contador de segundos restantes.
+          segundosRestantes--;
+
+        // Se o tempo de espera esgotou...
+        } else {
+
+          clearInterval(intervalId);
+
+          // Aborta chamada ao serviço DeCS.
+          if (Decs.obterDetalhesDoDescritor_ajax != null)
+            Decs.obterDetalhesDoDescritor_ajax.abort();
+
+          Decs.esconderCortinaDeCarregamento();
+
+          console.log("decs não respondeu e o tempo limite de espera esgotou");
+        }
+      }, 1000, null);
+
+      // Aborta uma chamada ao serviço DeCS que possa estar em andamento,
+      // para evitar chamadas comcorrentes.
+      if (Decs.obterDetalhesDoDescritor_ajax != null)
+        Decs.obterDetalhesDoDescritor_ajax.abort();
+      
+      Decs.obterDetalhesDoDescritor_ajax = jQuery.getJSON(enderecoAjax, function(dados) {
+        clearInterval(intervalId);
+        Decs.obterDetalhesDoDescritor_ajax = null;
         Decs.adicionarPasso(descritor, id, null);
         Decs.removerTodosOsItensDaListaDeDescritoresEncontrados();
         Decs.atualizarListaDeDescritoresEncontrados(dados.resultado.descritores, false, idioma);
@@ -776,7 +813,15 @@
     /**
      * MISCELANEA. 
      * 
+     */
+
+    /**
+     * Mostra mensagem de alerta quando o DeCS não responde uma chamada.
+     * 
      */ 
+    Decs.alertaDeLimiteAtingido = function() {
+      alert(Decs.obterMensagem("msg8"));
+    }
 
     /**
      * Posiciona cortina.

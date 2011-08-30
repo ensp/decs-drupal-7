@@ -144,7 +144,7 @@ function decs_menu() {
     'access arguments' => array(t('access content')),
     'type' => MENU_CALLBACK,
   );  
-  
+
   return $items;
 }
 
@@ -160,7 +160,7 @@ function decs_descritores_callback($argumento) {
   $idioma = null;
   $argumentos = null;
   $descritores = array();
-  
+
   if (strpos($argumento, '|') !== false) {
     $partes = explode('|', $argumento);
     if (is_array($partes) && count($partes) == 2) {
@@ -170,13 +170,13 @@ function decs_descritores_callback($argumento) {
   } else {
     $termo = urlencode($argumento);
   }
-  
+
   if (!is_null($termo)) {
     $argumentos = "bool=$termo";
     if (!is_null($idioma))
       $argumentos .= "&lang=$idioma";
   }
-  
+
   if (!is_null($argumentos)) {
 
     $xml = _decs_xml("http://decs.bvs.br/cgi-bin/mx/cgi=@vmx/decs/?$argumentos");  
@@ -261,7 +261,7 @@ function decs_descritor_callback($argumento) {
  *  Implementar alternativas para a função "simplexml_load_file".
  * 
  */ 
-function _decs_xml($url) {    
+function _decs_xml($url) {
   return simplexml_load_file($url);
 }
 
@@ -273,6 +273,6 @@ function _decs_encode($input) {
     for($i = 0; $i < $length; $i++)
         $temp .= '%' . bin2hex($input[$i]);
     return $temp;
-} 
+}
 
 
