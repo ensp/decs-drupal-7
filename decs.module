@@ -2,186 +2,267 @@
 
 /**
  * @file
- * Campo de busca para Descritores em Ciências da Saúde (DeCS).
+ *  Campo de busca para Descritores em Ciências da Saúde (DeCS).
+ * 
+ * @author
+ *  Alexandre Junqueira <afjunqueira@gmail.com> 
  *
  */
- 
+
 /**
  * Implements hook_help.
  *
  * Displays help and module information.
  *
- * @param path
- *   Which path of the site we're using to display help
- * @param arg
- *   Array that holds the current path as returned from arg() function
+ * @param string path
+ *   Which path of the site we're using to display help.
+ * @param array arg
+ *   Array that holds the current path as returned from arg() function.
+ *
  */
 function decs_help($path, $arg) {
-	switch ($path) {
-		case 'admin/help#decs':
-		return '<p>' . t('Fornece mecanismo para usar os Descritores em Ciências da Saúde (DeCS)') . '</p>';
-		break;
-	}
+  switch ($path) {
+    case 'admin/help#decs':
+    return '<p>' . t('Fornece mecanismo para usar os Descritores em Ciências da Saúde (DeCS)') . '</p>';
+    break;
+  }
 }
-
-/***************************************************************
- * Field Type API hooks
- ***************************************************************/
 
 /**
  * Implements hook_field_info().
  *
  * Provides the description of the field.
+ * 
  */
 function decs_field_info() {
-	return array(
-		'decs_decs' => array(
-			'label' => t('Descritores em Ciências da Saúde'),
-			'description' => t('Campo de busca para Descritores em Ciências da Saúde (DeCS).'),
-			'default_widget' => 'decs_descriptors_field',
-			'default_formatter' => 'decs_descriptors_field',			
-		),
-	);
+  return array(
+    'decs_decs' => array(
+      'label' => t('Descritores em Ciências da Saúde'),
+      'description' => t('Campo de busca para Descritores em Ciências da Saúde (DeCS).'),
+      'default_widget' => 'decs_descriptors_field',
+      'default_formatter' => 'decs_descriptors_field',      
+    ),
+  );
 }
 
 /**
  * Implements hook_field_widget_info().
+ * 
  */
 function decs_field_widget_info() {
-	return array(
-		'decs_descriptors_field' => array(
-			'label' => t('Campo DeCS'), 
-			'field types' => array('decs_decs'), 
-		),
-	);
+  return array(
+    'decs_descriptors_field' => array(
+      'label' => t('Campo DeCS'), 
+      'field types' => array('decs_decs'), 
+    ),
+  );
 }
 
 /**
  * Implements hook_field_widget_form().
+ * 
  */
-function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {	
-	
-	global $base_url;
-	
-	// drupal_get_path('module', 'decs'));
-	
-	$element['descriptors'] = array();
-	
-	$element['descriptors'] += array(
-		'#id' => 'decs-descriptors-field',
-		'#title' => 'Descritores em Ciências da Saúde',
-		'#type' => 'textfield',
-		'#maxlength'=>'10000000',
-		'#default_value' => isset($items[$delta]['descriptors']) ? $items[$delta]['descriptors'] : '',
-		'#suffix' => 
-		'<div id="decs-container">' . 		
-		'	<div id="decs-descritores-selecionados-container" class="decs-clearfix">' . 
-		'		<strong id="decs-descritores-selecionados-titulo" class="form-item-title">Descritores Selecionados:</strong>' . 
-		'		<ul id="decs-descritores-selecionados" class="decs-clearfix"></ul>' . 
-		'	</div>' .
-		'	<div id="decs-cortina"></div>' .				
-		'	<strong class="form-item-title">Vocabulário DeCS:</strong>' . 
-		'	<div id="decs-busca-container">' .		
-		'		<input id="decs-campo-busca" class="form-text" type="text" value=""/>' . 
-		'		<input id="decs-botao-busca" class="form-submit" type="button" value="procurar"/>' .
-		'	</div>' .
-		'	<div id="decs-descritores-encontrados-container">' . 
-		'		<div id="decs-descritores-encontrados-mensagem"><p id="decs-mensagem1"></p></div>' .
-		'		<div id="decs-passos-container" class="decs-clearfix"><ul id="decs-passos"></ul></div>' .
-		'		<div id="decs-descritor-cortina-container">' .		 		
-		'			<div id="decs-descritor-definicao-container"><p class="decs-descritor-definicao-texto"></p></div>' .		 
-		'			<ul id="decs-descritores-encontrados"></ul>' .
-		'		</div>' .		
-		'		<span id="decs-base" style="display:none;">' . _decs_encode($base_url) . '</span>' .
-		'	</div>' .
-		'	<p id="decs-mensagem2"></p>' .			
-		'</div>',
-		'#attached' => array(
-			'js'  => array(drupal_get_path('module', 'decs') . '/decs.js'),
-			'css' => array(drupal_get_path('module', 'decs') . '/decs.css'),			
-		),
-	);
-	
-	unset($element['#maxlength']);
-	
-	return $element;	
+function decs_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {  
+  
+  global $base_url;
+  
+  $element['descriptors'] = array();
+  
+  $element['descriptors'] += array(
+    '#id' => 'decs-descriptors-field',
+    '#title' => 'Descritores em Ciências da Saúde',
+    '#type' => 'textfield',
+    '#maxlength'=>'10000000',
+    '#default_value' => isset($items[$delta]['descriptors']) ? $items[$delta]['descriptors'] : '',
+    '#suffix' =>
+    '<div id="decs-container">' .
+    '  <div id="decs-descritores-selecionados-container" class="decs-clearfix">' .
+    '    <strong id="decs-descritores-selecionados-titulo" class="form-item-title">Descritores Selecionados:</strong>' .
+    '    <ul id="decs-descritores-selecionados" class="decs-clearfix"></ul>' .
+    '  </div>' .
+    '  <div id="decs-cortina"></div>' .
+    '  <strong class="form-item-title">Vocabulário DeCS:</strong>' .
+    '  <div id="decs-busca-container">' .
+    '    <input id="decs-campo-busca" class="form-text" type="text" value=""/>' .
+    '    <select id="decs-campo-idioma" class="form-select">' .
+    '       <option value="p">português</option>' .
+    '       <option value="i">english</option>' .
+    '       <option value="e">español</option>' .
+    '    </select>' .
+    '    <input id="decs-botao-busca" class="form-submit" type="button" value="procurar"/>' .
+    '  </div>' .
+    '  <div id="decs-descritores-encontrados-container">' .
+    '    <div id="decs-descritores-encontrados-mensagem"><p id="decs-mensagem1"></p></div>' .
+    '    <div id="decs-passos-container" class="decs-clearfix"><ul id="decs-passos"></ul></div>' .
+    '    <div id="decs-descritor-cortina-container">' .
+    '      <div id="decs-descritor-definicao-container"><p class="decs-descritor-definicao-texto"></p></div>' .
+    '      <ul id="decs-descritores-encontrados"></ul>' .
+    '    </div>' .
+    '    <span id="decs-base" style="display:none;">' . _decs_encode($base_url) . '</span>' .
+    '  </div>' .
+    '  <p id="decs-mensagem2"></p>' .
+    '</div>',
+    '#attached' => array(
+      'js'  => array(drupal_get_path('module', 'decs') . '/decs.js'),
+      'css' => array(drupal_get_path('module', 'decs') . '/decs.css'),
+    ),
+  );
+
+  unset($element['#maxlength']);
+
+  return $element;
 }
 
 /**
  * Implements hook_field_is_empty().
+ *
  */
 function decs_field_is_empty($item, $field) {
-	return false;
+  return false;
 }
 
 /**
  * Implements hook_menu().
+ *
  */
-
 function decs_menu() {
-	
-	$items = array();
-	
-	$items['decs/descritores/%'] = array(
-		'title' => 'DeCS Ajax',
-		'page callback' => 'decs_descritores_callback',
-		'page arguments' => array(2),
-		'access arguments' => array(t('access content')),
-		'type' => MENU_CALLBACK,
-	);
-	
-	$items['decs/descritor/%'] = array(
-		'title' => 'DeCS Ajax',
-		'page callback' => 'decs_descritor_callback',
-		'page arguments' => array(2),
-		'access arguments' => array(t('access content')),
-		'type' => MENU_CALLBACK,
-	);	
-	
-	return $items;
+  
+  $items = array();
+  
+  $items['decs/descritores/%'] = array(
+    'title' => 'DeCS Ajax',
+    'page callback' => 'decs_descritores_callback',
+    'page arguments' => array(2),
+    'access arguments' => array(t('access content')),
+    'type' => MENU_CALLBACK,
+  );
+  
+  $items['decs/descritor/%'] = array(
+    'title' => 'DeCS Ajax',
+    'page callback' => 'decs_descritor_callback',
+    'page arguments' => array(2),
+    'access arguments' => array(t('access content')),
+    'type' => MENU_CALLBACK,
+  );  
+  
+  return $items;
 }
 
 // AJAX
 
-function decs_descritores_callback($texto) {
-	
-	$xml = _decs_xml('http://decs.bvs.br/cgi-bin/mx/cgi=@vmx/decs/?bool=' . urlencode($texto));
-	$nos = $xml->xpath('/decsvmx/decsws_response');	
-	
-	$descritores = array();
-	
-	foreach ($nos as $no) {					
-		$descritores[(string) $no->tree->self->term_list->term] = array('arvore_id' => (string) $no['tree_id']);		
-		foreach ($no->record_list->record->synonym_list->synonym as $sinonimo)					
-			$descritores[(string) $sinonimo] = array('arvore_id' => (string) $no['tree_id']);		
-	}
-	
-	drupal_json_output(array('descritores'=>$descritores));
+/**
+ * Callback da busca por termo.
+ *
+ */
+function decs_descritores_callback($argumento) {
+
+  $termo = null;
+  $idioma = null;
+  $argumentos = null;
+  $descritores = array();
+  
+  if (strpos($argumento, '|') !== false) {
+    $partes = explode('|', $argumento);
+    if (is_array($partes) && count($partes) == 2) {
+      $termo = urlencode($partes[0]);
+      $idioma = $partes[1];
+    }
+  } else {
+    $termo = urlencode($argumento);
+  }
+  
+  if (!is_null($termo)) {
+    $argumentos = "bool=$termo";
+    if (!is_null($idioma))
+      $argumentos .= "&lang=$idioma";
+  }
+  
+  if (!is_null($argumentos)) {
+
+    $xml = _decs_xml("http://decs.bvs.br/cgi-bin/mx/cgi=@vmx/decs/?$argumentos");  
+    $nos = $xml->xpath('/decsvmx/decsws_response');  
+
+    foreach ($nos as $no) {          
+      $descritores[(string) $no->tree->self->term_list->term] = array('arvore_id' => (string) $no['tree_id']);    
+      foreach ($no->record_list->record->synonym_list->synonym as $sinonimo)          
+        $descritores[(string) $sinonimo] = array('arvore_id' => (string) $no['tree_id']);    
+    }
+  }
+
+  drupal_json_output(array('descritores'=>$descritores));
 }
 
-function decs_descritor_callback($id) {
-	
-	$xml = _decs_xml('http://decs.bvs.br/cgi-bin/mx/cgi=@vmx/decs?tree_id=' . $id);
-	
-	$termo = $xml->xpath("/decsvmx/decsws_response/tree/self/term_list[@lang='pt']/term");
-	$definicao = $xml->xpath("/decsvmx/decsws_response/record_list/record/definition/occ/@n");
-	$descendentes = $xml->xpath("/decsvmx/decsws_response/tree/descendants/term_list[@lang='pt']/term");
-	
-	$descritores = array();	
-	
-	foreach($descendentes as $descendente)		
-		$descritores[(string) $descendente] = array('arvore_id'=>(string) $descendente['tree_id']);			
-	
-	$resultado = array();		
-	$resultado['definicao'] = (string) $definicao[0];
-	$resultado['termo'] = (string) $termo[0];
-	$resultado['descritores'] = $descritores;
-	
-	drupal_json_output(array('resultado'=>$resultado));		
+/**
+ * Callback da busca por id da árvore.
+ * 
+ */ 
+function decs_descritor_callback($argumento) {
+  
+  $id = null;
+  $idioma = null;
+  $argumentos = null;
+  $resultado = array();
+
+  if (strpos($argumento, '|') !== false) {
+    $partes = explode('|', $argumento);
+    if (is_array($partes) && count($partes) == 2) { 
+      $id = $partes[0];
+      $idioma = $partes[1];
+    }
+  } else {
+    $id = $partes[0];
+  }
+  
+  if (!is_null($id)) {
+    $argumentos = "tree_id=$id";
+    if (!is_null($idioma))
+      $argumentos .= "&lang=$idioma";
+  }
+
+  if (!is_null($argumentos)) {
+ 
+    $xml = _decs_xml("http://decs.bvs.br/cgi-bin/mx/cgi=@vmx/decs?$argumentos");
+
+    switch ($idioma) {
+      case 'i':
+        $lang = 'en';
+        break;
+      case 'e':
+        $lang = 'es';
+        break;
+      default:
+        $lang = 'pt';
+    }
+
+    $termo = $xml->xpath("/decsvmx/decsws_response/tree/self/term_list[@lang='$lang']/term");
+    $definicao = $xml->xpath("/decsvmx/decsws_response/record_list/record/definition/occ/@n");
+    $descendentes = $xml->xpath("/decsvmx/decsws_response/tree/descendants/term_list[@lang='$lang']/term");
+
+    $descritores = array();  
+
+    foreach($descendentes as $descendente)
+      $descritores[(string) $descendente] = array('arvore_id'=>(string) $descendente['tree_id']);
+
+    $resultado['definicao'] = (string) $definicao[0];
+    $resultado['termo'] = (string) $termo[0];
+    $resultado['descritores'] = $descritores;
+  }
+  
+  drupal_json_output(array('resultado'=>$resultado));
 }
 
-function _decs_xml($url) {		
-	return simplexml_load_file($url);
+/**
+ * Carrega um XML.
+ * 
+ * @param string $url
+ *  Endereço http de um recurso que retorna dados no formato XML.
+ * 
+ * @todo
+ *  Implementar alternativas para a função "simplexml_load_file".
+ * 
+ */ 
+function _decs_xml($url) {    
+  return simplexml_load_file($url);
 }
 
 // Extra
