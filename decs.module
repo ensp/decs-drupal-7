@@ -257,12 +257,36 @@ function decs_descritor_callback($argumento) {
  * @param string $url
  *  Endereço http de um recurso que retorna dados no formato XML.
  * 
- * @todo
- *  Implementar alternativas para a função "simplexml_load_file".
- * 
  */ 
 function _decs_xml($url) {
-  return simplexml_load_file($url);
+  
+  $result = null;
+
+  if (function_exists('curl_init')) {
+  
+    $ch = curl_init();
+    
+    $timeout = 5; // set to zero for no timeout
+    
+    curl_setopt ( $ch, CURLOPT_HTTPPROXYTUNNEL, 1 );
+    curl_setopt ( $ch, CURLOPT_PROXY, '' );
+    curl_setopt ( $ch, CURLOPT_PROXYUSERPWD, '' );
+    curl_setopt ( $ch, CURLOPT_URL, $url);
+    curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, 1 );
+    curl_setopt ( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
+    
+    $file_contents = curl_exec($ch);
+    
+    curl_close($ch);
+    
+    $result = new SimpleXMLElement($file_contents);
+  
+  } else if ( function_exists('simplexml_load_file') ) {
+
+    $result = simplexml_load_file($url);
+  }
+
+  return $result;  
 }
 
 // Extra
