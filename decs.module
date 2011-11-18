@@ -5,7 +5,7 @@
  *  Campo de busca para Descritores em Ciências da Saúde (DeCS).
  * 
  * @author
- *  Alexandre Junqueira <afjunqueira@gmail.com> 
+ *  Equipe CCI/ENSP 
  *
  */
 
@@ -266,7 +266,7 @@ function _decs_xml($url) {
   
     $ch = curl_init();
     
-    $timeout = 5; // set to zero for no timeout
+    $timeout = 5;
     
     curl_setopt ( $ch, CURLOPT_HTTPPROXYTUNNEL, 1 );
     curl_setopt ( $ch, CURLOPT_PROXY, '' );

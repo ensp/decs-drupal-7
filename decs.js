@@ -3,10 +3,10 @@
  *  JavaScript do módulo DeCS.
  * 
  * @author
- *  Alexandre Junqueira <afjunqueira@gmail.com>
+ *  Equipe CCI/ENSP
  * 
  * @todo
- *  Inserir advertância da GPL.
+ *  Inserir advertência da GPL.
  */
 
 (function($) {
